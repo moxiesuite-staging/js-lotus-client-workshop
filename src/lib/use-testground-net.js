@@ -4,7 +4,7 @@ import { BrowserProvider } from '@filecoin-shipyard/lotus-client-provider-browse
 import { testnet } from '@filecoin-shipyard/lotus-client-schema'
 import IpfsHttpClient from 'ipfs-http-client'
 
-const api = 'lotus.testground.ipfs.team/api'
+const api = 'localhost:7777'
 
 export default function useTestgroundNet ({ appState, updateAppState }) {
   const updateAvailable = useCallback(
@@ -40,12 +40,14 @@ export default function useTestgroundNet ({ appState, updateAppState }) {
     async function run () {
       if (state.canceled) return
       if (!genesisCid) return
-      const paramsUrl = `https://${api}/0/testplan/params`
-      const response = await fetch(paramsUrl)
-      const {
-        TestInstanceCount: nodeCount,
-        TestRun: testgroundRunId
-      } = await response.json()
+      // const paramsUrl = `https://${api}/0/testplan/params`
+      // const response = await fetch(paramsUrl)
+      // const {
+      //   TestInstanceCount: nodeCount,
+      //   TestRun: testgroundRunId
+      // } = await response.json()
+      const nodeCount = 1
+      const testgroundRunId = 0
       if (state.canceled) return
       const available = {}
       for (let i = 0; i < nodeCount; i++) {
@@ -53,7 +55,7 @@ export default function useTestgroundNet ({ appState, updateAppState }) {
         updateAvailable(draft => {
           draft[i] = true
         })
-        const url = `https://${api}/${i}/miner/rpc/v0`
+        const url = `http://${api}/rpc/v0`
         const provider = new BrowserProvider(url, { transport: 'http' })
         const client = new LotusRPC(provider, { schema: testnet.storageMiner })
         const address = await client.actorAddress()
@@ -96,7 +98,7 @@ export default function useTestgroundNet ({ appState, updateAppState }) {
     let state = { canceled: false }
     async function run () {
       if (state.canceled) return
-      const url = `https://${api}/0/node/rpc/v0`
+      const url = `http://${api}/rpc/v0`
       const provider = new BrowserProvider(url, { transport: 'http' })
       const client = new LotusRPC(provider, { schema: testnet.fullNode })
       try {
@@ -137,10 +139,10 @@ export default function useTestgroundNet ({ appState, updateAppState }) {
   useEffect(() => {
     let state = { canceled: false }
     const ipfs = IpfsHttpClient({
-      host: 'lotus.testground.ipfs.team',
-      port: 443,
-      protocol: 'https',
-      apiPath: '/api/0/ipfs/api/v0'
+      host: 'localhost',
+      port: 5001,
+      protocol: 'http',
+      apiPath: '/api/v0'
     })
     async function run () {
       if (state.canceled) return

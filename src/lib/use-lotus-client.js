@@ -7,22 +7,11 @@ export default function useLotusClient(nodeNumber, nodeOrMiner) {
   const [client, setClient] = useState()
 
   useEffect(() => {
-    const api = 'lotus.testground.ipfs.team/api'
-    const wsUrl = 'wss://' + api + `/${nodeNumber}/${nodeOrMiner}/rpc/v0`
-    const provider = new BrowserProvider(wsUrl, {
-      token: async () => {
-        const tokenUrl =
-          'https://' +
-          api +
-          `/${nodeNumber}/testplan/` +
-          (nodeOrMiner === 'node' ? '.lotus' : '.lotusstorage') +
-          '/token'
-        const response = await fetch(tokenUrl)
-        return await response.text()
-      }
-    })
+    const api = 'localhost:7777'
+    const wsUrl = 'ws://' + api + `/rpc/v0`
+    const provider = new BrowserProvider(wsUrl)
     const client = new LotusRPC(provider, {
-      schema: nodeOrMiner === 'node' ? testnet.fullNode : testnet.storageMiner
+      schema: nodeOrMiner === "node" ? testnet.fullNode : testnet.storageMiner
     })
     setClient(client)
     return () => {

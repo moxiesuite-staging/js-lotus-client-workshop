@@ -47,10 +47,10 @@ export default function Retrieve ({ appState, updateAppState }) {
               console.log('Unpin', entry.node, cid)
               try {
                 const ipfs = IpfsHttpClient({
-                  host: 'lotus.testground.ipfs.team',
-                  port: 443,
-                  protocol: 'https',
-                  apiPath: `/api/${entry.node}/ipfs/api/v0`
+                  host: 'localhost',
+                  port: 5001,
+                  protocol: 'http',
+                  apiPath: `/api/v0`
                 })
                 //const results = await ipfs.pin.ls(cid)
                 const results = await ipfs.pin.rm(cid)
@@ -122,17 +122,9 @@ export default function Retrieve ({ appState, updateAppState }) {
                     startTime
                   }
                 })
-                const api = 'lotus.testground.ipfs.team/api'
-                const wsUrl = 'wss://' + api + `/${entry.node}/node/rpc/v0`
-                const provider = new BrowserProvider(wsUrl, {
-                  token: async () => {
-                    const tokenUrl =
-                      'https://' + api + `/${entry.node}/testplan/.lotus/token`
-                    const response = await fetch(tokenUrl)
-                    return await response.text()
-                  },
-                  transport: 'http'
-                })
+                const api = 'localhost:7777'
+                const wsUrl = 'ws://' + api + `/rpc/v0`
+                const provider = new BrowserProvider(wsUrl)
                 /* Sample from CLI
                 [
                   {
@@ -194,8 +186,8 @@ export default function Retrieve ({ appState, updateAppState }) {
                     startTime,
                     endTime,
                     url:
-                      `https://lotus.testground.ipfs.team/api/` +
-                      `${entry.node}/testplan/downloads/` +
+                      `http://localhost/` +
+                      `/downloads/` +
                       `${cid}-${randomId}.jpg`
                   }
                 })
@@ -223,15 +215,9 @@ export default function Retrieve ({ appState, updateAppState }) {
                     startTime
                   }
                 })
-                const api = 'lotus.testground.ipfs.team/api'
-                const wsUrl = 'wss://' + api + `/${entry.node}/node/rpc/v0`
+                const api = 'localhost:7777'
+                const wsUrl = 'ws://' + api + `/rpc/v0`
                 const provider = new BrowserProvider(wsUrl, {
-                  token: async () => {
-                    const tokenUrl =
-                      'https://' + api + `/${entry.node}/testplan/.lotus/token`
-                    const response = await fetch(tokenUrl)
-                    return await response.text()
-                  },
                   transport: 'http'
                 })
                 const retrieveClient = new LotusRPC(provider, {
@@ -263,8 +249,8 @@ export default function Retrieve ({ appState, updateAppState }) {
                     startTime,
                     endTime,
                     url:
-                      `https://lotus.testground.ipfs.team/api/` +
-                      `${entry.node}/ipfs-gateway/ipfs/${cid}`
+                      `http://localhost:5001` +
+                      `/ipfs-gateway/ipfs/${cid}`
                   }
                 })
               } catch (e) {
@@ -354,10 +340,10 @@ async function gc (available) {
   for (const nodeNum in available) {
     try {
       const ipfs = IpfsHttpClient({
-        host: 'lotus.testground.ipfs.team',
-        port: 443,
-        protocol: 'https',
-        apiPath: `/api/${nodeNum}/ipfs/api/v0`
+        host: 'localhost',
+        port: 5001,
+        protocol: 'http',
+        apiPath: `/api/v0`
       })
       console.log(`GC Node #${nodeNum}`)
       const results = await ipfs.repo.gc()
